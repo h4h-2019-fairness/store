@@ -4,11 +4,28 @@
 <header class="jumbotron" style="background-color:#A9F16C">
   <div class="container">
     <div class="row">
-      <h1>{{.greeting}}</h1>
-      <p>{{.subtitle}}</p>
+      <h1>Store Server</h1>
     </div>
   </div>
 </header>
+
+<h2>Recent Content</h2>
+<table>
+  <tr>
+    <th style="width: 20%;">User ID</th>
+    <th style="width: 10%;">User Name</th>
+    <th style="width: 40%;">Content Hash</th>
+    <th style="width: 20%;">Created At</th>
+  </tr>
+  {{range $t, $i := .results}}
+    <tr>
+      <td>{{$i.UserId}}</td>
+      <td>{{$i.UserName}}</td>
+      <td>{{$i.Hash}}</td>
+      <td>{{$i.CreatedAt}}</td>
+    </tr>
+  {{end}}
+</table>
 
 <div class="container">
   <div class="row">

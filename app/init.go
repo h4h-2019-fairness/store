@@ -30,7 +30,7 @@ func InitDB() {
 		log.Panicf("error creating users table: %s", err)
 	}
 
-	_, err = DB.Exec("CREATE TABLE IF NOT EXISTS content ( user_id TEXT NOT NULL, content_hash TEXT NOT NULL, signature TEXT NOT NULL, FOREIGN KEY(user_id) REFERENCES users(id), CONSTRAINT PK_CONTENT PRIMARY KEY (user_id, content_hash) );")
+	_, err = DB.Exec("CREATE TABLE IF NOT EXISTS content ( user_id TEXT NOT NULL, content_hash TEXT NOT NULL, signature TEXT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(user_id) REFERENCES users(id), CONSTRAINT PK_CONTENT PRIMARY KEY (user_id, content_hash) );")
 	if err != nil {
 		log.Panicf("error creating content table: %s", err)
 	}
