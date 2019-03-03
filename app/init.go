@@ -1,7 +1,10 @@
 package app
 
 import (
+	"database/sql"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/revel/revel"
+	"log"
 )
 
 var (
@@ -11,6 +14,29 @@ var (
 	// BuildTime revel app build-time (ldflags)
 	BuildTime string
 )
+
+var DB *sql.DB
+
+func InitDB() {
+
+	var err error
+	DB, err = sql.Open("sqlite3", "./data.db")
+	if err != nil {
+		log.Panicf("error setting up sqlite3: %s", err)
+	}
+
+	_, err = DB.Exec("CREATE TABLE IF NOT EXISTS users ( id TEXT PRIMARY KEY, public_key TEXT UNIQUE NOT NULL, fullname TEXT UNIQUE NOT NULL );")
+	if err != nil {
+		log.Panicf("error creating users table: %s", err)
+	}
+
+	_, err = DB.Exec("CREATE TABLE IF NOT EXISTS content ( user_id TEXT NOT NULL, content_hash TEXT NOT NULL, signature TEXT NOT NULL, FOREIGN KEY(user_id) REFERENCES users(id), CONSTRAINT PK_CONTENT PRIMARY KEY (user_id, content_hash) );")
+	if err != nil {
+		log.Panicf("error creating content table: %s", err)
+	}
+
+	revel.RevelLog.Info("DB ready")
+}
 
 func init() {
 	// Filters is the default set of global filters.
@@ -29,6 +55,8 @@ func init() {
 		revel.BeforeAfterFilter,       // Call the before and after filter functions
 		revel.ActionInvoker,           // Invoke the action.
 	}
+
+	revel.OnAppStart(InitDB)
 
 	// Register startup functions with OnAppStart
 	// revel.DevMode and revel.RunMode only work inside of OnAppStart. See Example Startup Script
