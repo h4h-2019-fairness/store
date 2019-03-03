@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/base64"
 	"encoding/pem"
 	"github.com/google/uuid"
 	"github.com/h4h-2019-fairness/store/app"
@@ -41,7 +42,13 @@ func (u User) Create() revel.Result {
 		return u.Render(errors)
 	}
 
-	pubkey := []byte(req.Pubkey)
+	pubkey, err := base64.StdEncoding.DecodeString(req.Pubkey)
+	if err != nil {
+		u.Validation.Error("public key is not in base64 format: %s", err)
+		errors := u.Abort()
+		return u.Render(errors)
+	}
+
 	block, _ := pem.Decode(pubkey)
 	if block == nil {
 		u.Validation.Error("invalid pubkey provided, must be pem encoded rsa")

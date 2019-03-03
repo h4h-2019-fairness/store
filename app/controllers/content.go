@@ -143,7 +143,7 @@ func (c Content) Create() revel.Result {
 
 	pubkey, ok := genericPubKey.(*rsa.PublicKey)
 	if !ok {
-		c.Validation.Error("stored pubkey an RSA key")
+		c.Validation.Error("stored pubkey is not an RSA key")
 		errors := c.Abort()
 		return c.Render(errors)
 	}
