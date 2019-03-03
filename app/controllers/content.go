@@ -122,7 +122,14 @@ func (c Content) Create() revel.Result {
 		return c.Render(errors)
 	}
 
-	block, _ := pem.Decode([]byte(pubkey_string))
+	pubkey_dec, err := base64.StdEncoding.DecodeString(pubkey_string)
+	if err != nil {
+		c.Validation.Error("public key is not stored in base64 format: %s", err)
+		errors := c.Abort()
+		return c.Render(errors)
+	}
+
+	block, _ := pem.Decode(pubkey_dec)
 	if block == nil {
 		c.Validation.Error("invalid pubkey stored, must be pem encoded rsa")
 		errors := c.Abort()
