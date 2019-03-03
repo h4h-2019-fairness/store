@@ -25,7 +25,7 @@ type ContentData struct {
 }
 
 func (a App) Index() revel.Result {
-	stmt, err := app.DB.Prepare("SELECT u.id as user_id, u.fullname as user_name, c.content_hash as hash, c.created_at as created_at from users as u join content as c ORDER BY c.created_at DESC LIMIT 30")
+	stmt, err := app.DB.Prepare("SELECT u.id as user_id, u.fullname as user_name, c.content_hash as hash, c.created_at as created_at from users as u join content as c where u.id = c.user_id ORDER BY c.created_at DESC LIMIT 30")
 	if err != nil {
 		a.Validation.Error("error in query content statement: %s", err)
 		errors := a.Abort()
@@ -39,7 +39,7 @@ func (a App) Index() revel.Result {
 		return a.Render(errors)
 	}
 
-	results := make([]ContentData, 0)
+	var results []ContentData
 
 	for res.Next() {
 		var user_id string
